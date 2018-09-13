@@ -1,5 +1,7 @@
 package id.au.ringerc.as7.eclipselinkintegration;
 
+import java.lang.management.ManagementFactory;
+import javax.management.MBeanServer;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.TransactionManager;
@@ -13,6 +15,9 @@ import org.eclipse.persistence.transaction.jboss.JBossTransactionController;
  * of the eclipselink.target-server property on EclipseLink version 2.3.2 and
  * older. In newer versions where bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=365704
  * has been fixed, setting eclipselink.target-server to "jboss" is sufficient.
+ * 
+ * Overridden the {@link #getMBeanServer() } method. 
+ * This fix act as a workaround for the bug https://issues.jboss.org/browse/WFLY-9408 .
  * 
  * @author Craig Ringer <ringerc@ringerc.id.au>
  *
@@ -37,6 +42,11 @@ public class JBossAS7ServerPlatform extends JBossPlatform {
                 return super.acquireTransactionManager();
             }
         }
+    }
+
+    @Override
+    public MBeanServer getMBeanServer() {
+        return ManagementFactory.getPlatformMBeanServer();
     }
 
 }
